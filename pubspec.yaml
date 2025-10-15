@@ -80,14 +80,14 @@ flutter:
           weight: 700
 
 flutter_native_splash:
-  color: "#43AA8B"
-  icon_background_color: "#43AA8B"
+  color: "#1976D2"
+  icon_background_color: "#1976D2"
   image: assets/icons/ic_launcher.png
   fullscreen: true
   android: true
   android_12:
-    color: "#43AA8B"
-    icon_background_color: "#43AA8B"
+    color: "#1976D2"
+    icon_background_color: "#1976D2"
     image: assets/icons/ic_launcher.png
   ios: true
   web: false

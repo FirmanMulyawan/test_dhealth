@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:sizer/sizer.dart';
+// import 'package:sizer/sizer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'component/config/app_const.dart';
@@ -45,24 +45,11 @@ class AppInitializer extends StatefulWidget {
 
 class _AppInitializerState extends State<AppInitializer> {
   Future<void> _setOrientation(BuildContext context) async {
-    final isTablet = _isTablet(context);
-
     await SystemChrome.setPreferredOrientations(
-      isTablet
-          ? [
-              DeviceOrientation.portraitUp,
-              DeviceOrientation.landscapeLeft,
-              DeviceOrientation.landscapeRight,
-            ]
-          : [
-              DeviceOrientation.portraitUp,
-            ],
+      [
+        DeviceOrientation.portraitUp,
+      ],
     );
-  }
-
-  bool _isTablet(BuildContext context) {
-    final shortestSide = MediaQuery.of(context).size.shortestSide;
-    return shortestSide >= 600;
   }
 
   @override
@@ -76,9 +63,8 @@ class _AppInitializerState extends State<AppInitializer> {
   @override
   Widget build(BuildContext context) {
     return GlobalLoaderOverlay(
-      overlayColor: AppStyle.dialogBgColor,
-      child: Sizer(builder: (context, orientation, screenType) {
-        return GetMaterialApp(
+        overlayColor: AppStyle.dialogBgColor,
+        child: GetMaterialApp(
           title: AppConst.appName,
           // theme: AppTheme.themeLight,
           theme: AppStyle.themeData(context),
@@ -95,9 +81,7 @@ class _AppInitializerState extends State<AppInitializer> {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-        );
-      }),
-    );
+        ));
   }
 }
 
