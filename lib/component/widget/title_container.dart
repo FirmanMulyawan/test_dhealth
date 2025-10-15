@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart' as sizer;
 
 import '../config/app_style.dart';
 
@@ -21,10 +20,8 @@ class _TitleContainerState extends State<TitleContainer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: sizer.Device.screenType == sizer.ScreenType.mobile
-          ? EdgeInsets.symmetric(horizontal: 25)
-          : EdgeInsets.zero,
-      width: sizer.Device.screenType == sizer.ScreenType.mobile ? null : 620,
+      margin: EdgeInsets.symmetric(horizontal: 25),
+      width: null,
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         color: AppStyle.whiteColor,
@@ -44,16 +41,13 @@ class _TitleContainerState extends State<TitleContainer> {
               ),
             ),
             padding: EdgeInsets.symmetric(
-              vertical:
-                  sizer.Device.screenType == sizer.ScreenType.mobile ? 17 : 35,
+              vertical: 17,
             ),
             child: Text(
               widget.title,
               textAlign: TextAlign.center,
               style: AppStyle.bold(
-                size: sizer.Device.screenType == sizer.ScreenType.mobile
-                    ? 25
-                    : 32,
+                size: 25,
                 textColor: AppStyle.whiteColor,
               ),
             ),

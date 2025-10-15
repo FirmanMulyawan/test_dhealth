@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart' as sizer;
 
 class AppStyle {
   static Color whiteColor = Colors.white;
@@ -54,12 +53,10 @@ class AppStyle {
         textTheme: TextTheme(
             titleMedium: regular(
           textColor: AppStyle.pressedGreen,
-          size: sizer.Device.screenType == sizer.ScreenType.mobile ? 15 : 24,
+          size: 15,
         )),
         inputDecorationTheme: InputDecorationTheme(
-          contentPadding: sizer.Device.screenType == sizer.ScreenType.mobile
-              ? EdgeInsets.zero
-              : EdgeInsets.symmetric(vertical: 18),
+          contentPadding: EdgeInsets.zero,
           enabledBorder: inputBorderTheme(),
           border: inputBorderTheme(),
           focusedBorder: inputBorderTheme(),
@@ -68,7 +65,7 @@ class AppStyle {
           disabledBorder: disabledBorderTheme(),
           errorStyle: regular(
             textColor: AppStyle.errorTextColor,
-            size: sizer.Device.screenType == sizer.ScreenType.mobile ? 12 : 18,
+            size: 12,
           ),
           floatingLabelStyle: TextStyle(
             color: textColor,
@@ -83,7 +80,7 @@ class AppStyle {
           floatingLabelBehavior: FloatingLabelBehavior.always,
           hintStyle: regular(
             textColor: hintColor,
-            size: sizer.Device.screenType == sizer.ScreenType.mobile ? 15 : 26,
+            size: 15,
           ),
         ),
         filledButtonTheme: FilledButtonThemeData(

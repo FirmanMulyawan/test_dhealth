@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../config/app_style.dart';
 import '../widget/popup_button.dart';
-import 'package:sizer/sizer.dart' as sizer;
 import '../config/app_const.dart';
 
 class AlertModel {
@@ -19,9 +18,7 @@ class AlertModel {
           borderRadius: BorderRadius.circular(15),
         ),
         child: SizedBox(
-          width: sizer.Device.screenType == sizer.ScreenType.mobile
-              ? double.infinity
-              : 620,
+          width: double.infinity,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -37,52 +34,36 @@ class AlertModel {
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
-                  vertical: sizer.Device.screenType == sizer.ScreenType.mobile
-                      ? 17
-                      : 35,
+                  vertical: 17,
                 ),
                 child: Text(
                   title,
                   textAlign: TextAlign.center,
                   style: AppStyle.bold(
-                    size: sizer.Device.screenType == sizer.ScreenType.mobile
-                        ? 25
-                        : 32,
+                    size: 25,
                     textColor: AppStyle.whiteColor,
                   ),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(
-                  vertical: sizer.Device.screenType == sizer.ScreenType.mobile
-                      ? 30
-                      : 45,
-                  horizontal: sizer.Device.screenType == sizer.ScreenType.mobile
-                      ? 30
-                      : 45,
+                  vertical: 30,
+                  horizontal: 30,
                 ),
                 child: Text(
                   message,
                   textAlign: TextAlign.center,
                   style: AppStyle.bold(
-                    size: sizer.Device.screenType == sizer.ScreenType.mobile
-                        ? 20
-                        : 25,
+                    size: 20,
                     textColor: AppStyle.textColor,
                   ),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(
-                  bottom: sizer.Device.screenType == sizer.ScreenType.mobile
-                      ? 30
-                      : 45,
-                  left: sizer.Device.screenType == sizer.ScreenType.mobile
-                      ? 30
-                      : 45,
-                  right: sizer.Device.screenType == sizer.ScreenType.mobile
-                      ? 30
-                      : 45,
+                  bottom: 30,
+                  left: 30,
+                  right: 30,
                 ),
                 child: PopupButton(
                   onPressed: () {
@@ -91,17 +72,13 @@ class AlertModel {
                       onClicked.call();
                     }
                   },
-                  size: sizer.Device.screenType == sizer.ScreenType.mobile
-                      ? 50
-                      : 68,
+                  size: 50,
                   color: AppStyle.mainRed,
                   shadowColor: AppStyle.hoverRed,
                   child: Text(
                     buttonText ?? 'Ok',
                     style: AppStyle.bold(
-                      size: sizer.Device.screenType == sizer.ScreenType.mobile
-                          ? 15
-                          : 20,
+                      size: 15,
                       textColor: AppStyle.whiteColor,
                     ),
                   ),
@@ -127,17 +104,14 @@ class AlertModel {
     double? horizontalPadding,
     double? buttonSpacing,
   }) async {
-    double horPad = horizontalPadding ??
-        (sizer.Device.screenType == sizer.ScreenType.mobile ? 30 : 45);
+    double horPad = horizontalPadding ?? 30;
     final result = await Get.dialog<bool>(
       Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
         child: SizedBox(
-          width: sizer.Device.screenType == sizer.ScreenType.mobile
-              ? double.infinity
-              : 620,
+          width: double.infinity,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -153,44 +127,34 @@ class AlertModel {
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
-                  vertical: sizer.Device.screenType == sizer.ScreenType.mobile
-                      ? 17
-                      : 35,
+                  vertical: 17,
                 ),
                 child: Text(
                   title,
                   textAlign: TextAlign.center,
                   style: AppStyle.bold(
-                    size: sizer.Device.screenType == sizer.ScreenType.mobile
-                        ? 25
-                        : 32,
+                    size: 25,
                     textColor: AppStyle.whiteColor,
                   ),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(
-                  vertical: sizer.Device.screenType == sizer.ScreenType.mobile
-                      ? 30
-                      : 45,
+                  vertical: 30,
                   horizontal: horPad,
                 ),
                 child: Text(
                   message,
                   textAlign: TextAlign.center,
                   style: AppStyle.bold(
-                    size: sizer.Device.screenType == sizer.ScreenType.mobile
-                        ? 20
-                        : 25,
+                    size: 20,
                     textColor: AppStyle.textColor,
                   ),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(
-                  bottom: sizer.Device.screenType == sizer.ScreenType.mobile
-                      ? 30
-                      : 45,
+                  bottom: 30,
                   left: horPad,
                   right: horPad,
                 ),
@@ -201,38 +165,28 @@ class AlertModel {
                         onPressed: () {
                           Get.back(result: false);
                         },
-                        size: sizer.Device.screenType == sizer.ScreenType.mobile
-                            ? 50
-                            : 68,
+                        size: 50,
                         horizontalPadding: 0,
                         color: AppStyle.mainRed,
                         shadowColor: AppStyle.hoverRed,
                         child: Text(
                           cancelText ?? 'Cancel',
                           style: AppStyle.bold(
-                            size: sizer.Device.screenType ==
-                                    sizer.ScreenType.mobile
-                                ? 15
-                                : 20,
+                            size: 15,
                             textColor: AppStyle.whiteColor,
                           ),
                         ),
                       ),
                     ),
                     SizedBox(
-                      width: buttonSpacing ??
-                          (sizer.Device.screenType == sizer.ScreenType.mobile
-                              ? 20
-                              : 30),
+                      width: buttonSpacing ?? 20,
                     ),
                     Expanded(
                       child: PopupButton(
                         onPressed: () {
                           Get.back(result: true);
                         },
-                        size: sizer.Device.screenType == sizer.ScreenType.mobile
-                            ? 50
-                            : 68,
+                        size: 50,
                         horizontalPadding: confirmButtonHorizontalPadding,
                         color: AppStyle.mainOrange,
                         shadowColor: AppStyle.hoverOrange,
@@ -240,10 +194,7 @@ class AlertModel {
                           confirmText ?? 'Ok',
                           textAlign: TextAlign.center,
                           style: AppStyle.bold(
-                            size: sizer.Device.screenType ==
-                                    sizer.ScreenType.mobile
-                                ? 15
-                                : 20,
+                            size: 15,
                             textColor: AppStyle.whiteColor,
                           ),
                         ),
@@ -270,9 +221,7 @@ class AlertModel {
         ),
         child: Container(
           padding: EdgeInsets.all(30),
-          width: sizer.Device.screenType == sizer.ScreenType.mobile
-              ? double.infinity
-              : 620,
+          width: double.infinity,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -285,9 +234,7 @@ class AlertModel {
                 'noInternetTitle'.tr,
                 textAlign: TextAlign.center,
                 style: AppStyle.bold(
-                  size: sizer.Device.screenType == sizer.ScreenType.mobile
-                      ? 24
-                      : 32,
+                  size: 24,
                   textColor: AppStyle.textColor,
                 ),
               ),
@@ -298,9 +245,7 @@ class AlertModel {
                 'noInternetBody'.tr,
                 textAlign: TextAlign.center,
                 style: AppStyle.regular(
-                  size: sizer.Device.screenType == sizer.ScreenType.mobile
-                      ? 16
-                      : 20,
+                  size: 16,
                   textColor: AppStyle.textColor,
                 ),
               ),
@@ -314,19 +259,14 @@ class AlertModel {
                       onPressed: () {
                         Get.back(result: true);
                       },
-                      size: sizer.Device.screenType == sizer.ScreenType.mobile
-                          ? 50
-                          : 68,
+                      size: 50,
                       color: AppStyle.mainOrange,
                       shadowColor: AppStyle.hoverOrange,
                       child: Text(
                         'tryAgain'.tr,
                         textAlign: TextAlign.center,
                         style: AppStyle.bold(
-                          size:
-                              sizer.Device.screenType == sizer.ScreenType.mobile
-                                  ? 15
-                                  : 20,
+                          size: 15,
                           textColor: AppStyle.whiteColor,
                         ),
                       ),
