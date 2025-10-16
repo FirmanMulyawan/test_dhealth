@@ -14,7 +14,6 @@ class AppStyle {
   static Color buttonDisabledColor = const Color(0xffCCDBD6);
   static Color buttonDisabledShadowColor = const Color(0xff99A3A0);
   static Color mainGreen = const Color(0xff90BE6D);
-  static Color pressedGreen = const Color(0xff40807E);
   static Color mainOrange = const Color(0xffF8961E);
   static Color hoverOrange = const Color(0xffE27B02);
   static Color mainRed = const Color(0xffFF5252);
@@ -52,7 +51,7 @@ class AppStyle {
         // primarySwatch: AppStyle.appTheme,
         textTheme: TextTheme(
             titleMedium: regular(
-          textColor: AppStyle.pressedGreen,
+          textColor: AppStyle.blue,
           size: 15,
         )),
         inputDecorationTheme: InputDecorationTheme(
@@ -73,7 +72,7 @@ class AppStyle {
             fontSize: 15,
           ),
           labelStyle: TextStyle(
-            color: AppStyle.pressedGreen,
+            color: AppStyle.blue,
             fontWeight: FontWeight.w500,
             fontSize: 15,
           ),
@@ -109,7 +108,7 @@ class AppStyle {
           ),
         ),
         textSelectionTheme: TextSelectionThemeData(
-          cursorColor: AppStyle.pressedGreen,
+          cursorColor: AppStyle.blue,
         ));
   }
 

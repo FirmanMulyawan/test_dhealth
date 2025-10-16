@@ -34,7 +34,7 @@ class _TitleContainerState extends State<TitleContainer> {
             clipBehavior: Clip.hardEdge,
             width: double.maxFinite,
             decoration: BoxDecoration(
-              color: AppStyle.pressedGreen,
+              color: AppStyle.blue,
               borderRadius: BorderRadius.only(
                 topRight: Radius.circular(15),
                 topLeft: Radius.circular(15),

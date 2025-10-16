@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
+import '../../home/presentation/home_screen.dart';
 import '../../profile/presentation/profile_screen.dart';
+import '../../search/presentation/search_screen.dart';
 
 class BottomNavController extends GetxController {
   int selectedScreen = 0;
@@ -13,8 +15,8 @@ class BottomNavController extends GetxController {
   @override
   void onInit() {
     screenList = [
-      Text("Hello"),
-      Text("World"),
+      HomeScreen(),
+      SearchScreen(),
       Text("World"),
       Text("World"),
       Profile(),

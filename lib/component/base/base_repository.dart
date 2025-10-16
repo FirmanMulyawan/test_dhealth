@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import '../config/app_const.dart';
-import '../model/response_model.dart';
+// import '../model/response_model.dart';
 import '../util/helper.dart';
 import '../util/state.dart';
 
@@ -37,8 +37,9 @@ class BaseRepository {
       if (e.response?.data != null) {
         try {
           Map<String, dynamic> valueMap = jsonDecode(e.response?.data);
-          final error = ResponseModel.ignoreDataFromJson(valueMap);
-          response.onFailed(e.response?.statusCode, error.message.toString());
+          // final error = ResponseModel.fromJson(valueMap);
+          // response.onFailed(e.response?.statusCode, error.message.toString());
+          response.onFailed(e.response?.statusCode, valueMap.toString());
           response.onDone.call();
         } catch (_) {
           response.onFailed(e.response?.statusCode,

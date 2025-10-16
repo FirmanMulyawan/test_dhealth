@@ -3,12 +3,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class AppConst {
   static String appName = "Firman Test";
   static bool isDebuggable = true;
-  static String appUrl = dotenv.env['API_LINK']!;
+  static String appUrl = "${dotenv.env['API_LINK']}/v2";
+  static String apiKey = dotenv.env['API_KEY']!;
   static String defaultLocale = "id-ID";
 
   static String path = 'assets/';
 
   // icon
+  static String arrowDown = '${path}icons/ic_arrow_down.svg';
   static String iconBackButton = '${path}icons/ic_back_button.svg';
   static String iconCategoriesActive = '${path}icons/ic_categories_active.svg';
   static String iconCategoriesInActive =
@@ -24,7 +26,7 @@ class AppConst {
   static String iconRefresh = '${path}icons/ic_refresh.svg';
   static String iconSearchActive = '${path}icons/ic_search_active.svg';
   static String iconSearchInActive = '${path}icons/ic_search_inactive.svg';
-
+  static String searchIcon = '${path}icons/ic_search.svg';
   // images
   static String noInternetIcon = '${path}images/im_no_internet.png';
 
