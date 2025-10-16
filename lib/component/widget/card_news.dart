@@ -70,44 +70,61 @@ class CardNews extends StatelessWidget {
         SizedBox(
           height: 5,
         ),
-        Row(
+        Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-              child: Icon(
-                Icons.circle,
-                size: 8,
-                color: AppStyle.greyDark,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  child: Icon(
+                    Icons.circle,
+                    size: 8,
+                    color: AppStyle.greyDark,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                      isLoading == false
+                          ? data?.source?.name ?? ''
+                          : defaultSourceName,
+                      style: AppStyle.regular(
+                          size: 14, textColor: AppStyle.greyDark)),
+                ),
+              ],
             ),
-            Text(
-                isLoading == false
-                    ? data?.source?.name ?? ''
-                    : defaultSourceName,
-                style:
-                    AppStyle.regular(size: 14, textColor: AppStyle.greyDark)),
             SizedBox(
               width: 20,
             ),
             data?.author != null
-                ? Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                    child: Icon(
-                      Icons.circle,
-                      size: 8,
-                      color: AppStyle.greyDark,
-                    ),
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 4),
+                        child: Icon(
+                          Icons.circle,
+                          size: 8,
+                          color: AppStyle.greyDark,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                            isLoading == false
+                                ? data?.author ?? ''
+                                : defaultAuthor,
+                            style: AppStyle.regular(
+                                size: 14, textColor: AppStyle.greyDark)),
+                      ),
+                    ],
                   )
                 : Container(),
-            Expanded(
-              child: Text(
-                  isLoading == false ? data?.author ?? '' : defaultAuthor,
-                  style:
-                      AppStyle.regular(size: 14, textColor: AppStyle.greyDark)),
-            ),
           ],
         ),
         SizedBox(

@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
+import '../../categories/presentation/categories_screen.dart';
 import '../../home/presentation/home_screen.dart';
 import '../../profile/presentation/profile_screen.dart';
 import '../../search/presentation/search_screen.dart';
@@ -17,7 +18,7 @@ class BottomNavController extends GetxController {
     screenList = [
       HomeScreen(),
       SearchScreen(),
-      Text("World"),
+      CategoriesScreen(),
       Text("World"),
       Profile(),
     ];

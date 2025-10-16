@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../component/config/app_const.dart';
 import '../../../component/config/app_style.dart';
+import '../../../component/widget/card_news.dart';
 import 'search_controller.dart';
 
 class SearchScreen extends GetView<SearchEveythingController> {
@@ -28,7 +30,20 @@ class SearchScreen extends GetView<SearchEveythingController> {
           SizedBox(
             height: 10,
           ),
-          _categories(context)
+          _categories(context),
+          SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              color: AppStyle.blue,
+              onRefresh: () {
+                controller.getSearchList(refresh: true);
+                return Future.value();
+              },
+              child: _listSearch(),
+            ),
+          )
         ],
       ),
     );
@@ -147,6 +162,56 @@ class SearchScreen extends GetView<SearchEveythingController> {
           ),
         ),
       );
+    });
+  }
+
+  Widget _listSearch() {
+    return Obx(() {
+      final isLoading = controller.isLoading.value;
+      final isLoadMore = controller.loadMoreLoading.value;
+      final length = controller.article.length;
+
+      if (isLoading && controller.article.isEmpty) {
+        return Skeletonizer(
+          enabled: true,
+          child: ListView.separated(
+            itemCount: 5,
+            physics: AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.all(0),
+            separatorBuilder: (context, index) {
+              return SizedBox(
+                height: 20,
+              );
+            },
+            itemBuilder: (context, index) {
+              return CardNews(isLoading: true, data: null);
+            },
+          ),
+        );
+      }
+
+      return ListView.separated(
+          itemCount: length + (isLoadMore ? 1 : 0),
+          controller: controller.scrollController,
+          physics: AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(bottom: 100),
+          separatorBuilder: (context, index) {
+            return SizedBox(
+              height: 20,
+            );
+          },
+          itemBuilder: (context, index) {
+            if (index == length) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            final item = controller.article[index];
+
+            return CardNews(isLoading: false, data: item);
+          });
     });
   }
 }

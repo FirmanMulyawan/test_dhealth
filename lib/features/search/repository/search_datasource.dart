@@ -8,7 +8,7 @@ class SearchDatasource extends BaseDioDataSource {
   Future<String> getEverything(
       String search, String? kategory, int page, int size) {
     String path = '/everything';
-    // https://newsapi.org/v2/everything?q=technology&page=1&pageSize=10&apiKey=44783b266e634662bdf89379e82ae92d
+    // https://newsapi.org/v2/everything?q=technology&page=1&pageSize=10&apiKey=
 
     Map<String, dynamic> data = {
       'q': search,

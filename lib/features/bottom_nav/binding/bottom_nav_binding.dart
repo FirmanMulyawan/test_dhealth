@@ -1,6 +1,9 @@
 import 'package:get/get.dart';
 
 import '../../../component/util/network.dart';
+import '../../categories/presentation/categories_controller.dart';
+import '../../categories/repository/categories_datasource.dart';
+import '../../categories/repository/categories_repository.dart';
 import '../../home/presentation/home_controller.dart';
 import '../../home/repository/home_datasource.dart';
 import '../../home/repository/home_repository.dart';
@@ -21,5 +24,9 @@ class BottomNavBinding extends Bindings {
     Get.lazyPut(() => SearchDatasource(Network.dioClient()));
     Get.lazyPut(() => SearchRepository(Get.find()));
     Get.lazyPut(() => SearchEveythingController(Get.find()));
+
+    Get.lazyPut(() => CategoriesDatasource(Network.dioClient()));
+    Get.lazyPut(() => CategoriesRepository(Get.find()));
+    Get.lazyPut(() => CategoriesController(Get.find()));
   }
 }

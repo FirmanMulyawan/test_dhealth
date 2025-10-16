@@ -7,7 +7,7 @@ import '../../../component/model/news_response.dart';
 import '../repository/home_repository.dart';
 
 class HomeController extends GetxController {
-  final topHeader = <Articles>[].obs;
+  final article = <Articles>[].obs;
   final isLoading = false.obs;
   final loadMoreLoading = false.obs;
 
@@ -35,28 +35,6 @@ class HomeController extends GetxController {
     super.onClose();
   }
 
-  // void getTopHeadlines() {
-  //   isLoading = true;
-  //   update();
-  //   _repository.getTopHeadlines(
-  //     response: ResponseHandler(
-  //       onSuccess: (data) async {
-  //         topHeader.clear();
-  //         // if (data.status == "ok") {
-  //         topHeader.addAll((data.articles ?? []).cast<Articles>());
-  //         // }
-  //       },
-  //       onFailed: (e, message) {
-  //         AlertModel.showAlert(title: "Error", message: message);
-  //       },
-  //       onDone: () {
-  //         isLoading = false;
-  //         update();
-  //       },
-  //     ),
-  //   );
-  // }
-
   Future<void> getTopHeadlines({
     bool refresh = false,
   }) async {
@@ -65,7 +43,7 @@ class HomeController extends GetxController {
     if (refresh) {
       page = 1;
       hasMore = true;
-      topHeader.clear();
+      article.clear();
     }
 
     isLoading.value = true;
@@ -79,7 +57,7 @@ class HomeController extends GetxController {
           if (fetched.length < pageSize) {
             hasMore = false;
           }
-          topHeader.addAll(fetched);
+          article.addAll(fetched);
         },
         onFailed: (e, message) {
           AlertModel.showAlert(title: "Error", message: message);
@@ -89,10 +67,6 @@ class HomeController extends GetxController {
         },
       ),
     );
-  }
-
-  int getPageNumber(int itemsCount, int pageSize) {
-    return (itemsCount / pageSize).ceil().toInt() + 1;
   }
 
   Future<void> loadMore() async {
@@ -110,7 +84,7 @@ class HomeController extends GetxController {
           if (fetched.length < pageSize) {
             hasMore = false;
           }
-          topHeader.addAll(fetched);
+          article.addAll(fetched);
         },
         onFailed: (e, message) {
           AlertModel.showAlert(title: "Error", message: message);

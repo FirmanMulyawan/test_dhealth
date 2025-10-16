@@ -51,14 +51,13 @@ class HomeScreen extends GetView<HomeController> {
                 () {
                   final isLoading = controller.isLoading.value;
                   final isLoadMore = controller.loadMoreLoading.value;
-                  final length = controller.topHeader.length;
+                  final length = controller.article.length;
 
-                  if (isLoading && controller.topHeader.isEmpty) {
+                  if (isLoading && controller.article.isEmpty) {
                     return Skeletonizer(
                       enabled: true,
                       child: ListView.separated(
                         itemCount: 5,
-                        controller: controller.scrollController,
                         physics: AlwaysScrollableScrollPhysics(),
                         padding: EdgeInsets.all(0),
                         separatorBuilder: (context, index) {
@@ -92,7 +91,7 @@ class HomeScreen extends GetView<HomeController> {
                         );
                       }
 
-                      final item = controller.topHeader[index];
+                      final item = controller.article[index];
 
                       return CardNews(isLoading: false, data: item);
                     },

@@ -1,28 +1,27 @@
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_rx/src/rx_workers/utils/debouncer.dart';
+import 'package:get/get.dart';
 
 import '../../../component/model/category_model.dart';
 import '../../../component/model/news_response.dart';
 import '../../../component/util/helper.dart';
 import '../../../component/util/state.dart';
-import '../repository/search_repository.dart';
+import '../repository/categories_repository.dart';
 
-class SearchEveythingController extends GetxController {
-  final TextEditingController searchController = TextEditingController();
-  final SearchRepository _repository;
-  final Debouncer _searchDebouncer =
-      Debouncer(delay: Duration(milliseconds: 500));
+class CategoriesController extends GetxController {
+  final article = <Articles>[].obs;
+  final isLoading = false.obs;
+  final loadMoreLoading = false.obs;
 
   int page = 1;
   final int pageSize = 5;
   bool hasMore = true;
-  final isLoading = false.obs;
-  final loadMoreLoading = false.obs;
-  final article = <Articles>[].obs;
-  final ScrollController scrollController = ScrollController();
 
-  SearchEveythingController(this._repository);
+  final CategoriesRepository _repository;
+  final ScrollController scrollController = ScrollController();
+  String selectedCategoryId = '';
+
+  CategoriesController(this._repository);
+
   final List<CategoryModel> categorys = [
     CategoryModel(id: "general", categoryName: "General"),
     CategoryModel(id: "technology", categoryName: "Technology"),
@@ -33,41 +32,20 @@ class SearchEveythingController extends GetxController {
     CategoryModel(id: "entertainment", categoryName: "Entertainment"),
   ];
 
-  final RxString selectedCategoryId = ''.obs;
-
-  String get getCategoryName {
-    return categorys
-        .firstWhere((e) => e.id == selectedCategoryId.value,
-            orElse: () => CategoryModel(id: '', categoryName: 'Pilih Category'))
-        .categoryName;
-  }
-
   @override
   void onInit() {
     scrollController.addListener(_onScroll);
     super.onInit();
   }
 
-  @override
-  void onClose() {
-    scrollController.removeListener(_onScroll);
-    scrollController.dispose();
-
-    super.onClose();
-  }
-
   void changeSelectedCategory(String category) {
-    selectedCategoryId.value = category;
+    selectedCategoryId = category;
     update();
+
+    getCategoriesList(refresh: true);
   }
 
-  void updateKeyword() {
-    _searchDebouncer.call(() {
-      getSearchList(refresh: true);
-    });
-  }
-
-  Future<void> getSearchList({
+  Future<void> getCategoriesList({
     bool refresh = false,
   }) async {
     if (isLoading.value) return;
@@ -80,36 +58,10 @@ class SearchEveythingController extends GetxController {
 
     isLoading.value = true;
 
-    _repository.getEverything(
-      search: searchController.text,
+    _repository.getTopHeadlines(
       page: page,
       size: pageSize,
-      response: ResponseHandler(
-        onSuccess: (data) async {
-          final fetched = data.articles ?? [];
-          if (fetched.length < pageSize) {
-            hasMore = false;
-          }
-          article.addAll(fetched);
-        },
-        onFailed: (e, message) {
-          AlertModel.showAlert(title: "Error", message: message);
-        },
-        onDone: () {
-          isLoading.value = false;
-        },
-      ),
-    );
-  }
-
-  Future<void> loadMore() async {
-    if (loadMoreLoading.value || !hasMore) return;
-    loadMoreLoading.value = true;
-    page++;
-    _repository.getEverything(
-      search: searchController.text,
-      page: page,
-      size: pageSize,
+      categories: selectedCategoryId,
       response: ResponseHandler(
         onSuccess: (data) async {
           final fetched = data.articles ?? [];
@@ -137,5 +89,33 @@ class SearchEveythingController extends GetxController {
         scrollController.position.maxScrollExtent - 100) {
       loadMore();
     }
+  }
+
+  Future<void> loadMore() async {
+    if (loadMoreLoading.value || !hasMore) return;
+
+    loadMoreLoading.value = true;
+    page++;
+
+    _repository.getTopHeadlines(
+      page: page,
+      size: pageSize,
+      categories: selectedCategoryId,
+      response: ResponseHandler(
+        onSuccess: (data) {
+          final fetched = data.articles ?? [];
+          if (fetched.length < pageSize) {
+            hasMore = false;
+          }
+          article.addAll(fetched);
+        },
+        onFailed: (e, message) {
+          AlertModel.showAlert(title: "Error", message: message);
+        },
+        onDone: () {
+          loadMoreLoading.value = false;
+        },
+      ),
+    );
   }
 }
