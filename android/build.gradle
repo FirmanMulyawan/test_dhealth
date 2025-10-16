@@ -1,3 +1,19 @@
+buildscript { // <--- THIS BLOCK IS IMPORTANT
+    // ext.kotlin_version = '1.9.0' // Example, use your project's version
+    // ext.kotlin_version = '2.1.0'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.1'
+        // classpath "com.android.tools.build:gradle:8.5.0" 
+        // classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        // id 'com.google.gms.google-services' version '4.4.4' apply false
+        classpath 'com.google.gms:google-services:4.4.4'
+    }
+}
+
 allprojects {
     repositories {
         google()

@@ -8,12 +8,17 @@ import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 // import 'package:sizer/sizer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:notification_center/notification_center.dart';
 
 import 'component/config/app_const.dart';
 import 'component/config/app_route.dart';
 import 'component/config/app_style.dart';
 import 'component/translation/app_translation.dart';
 import 'component/util/storage_util.dart';
+import 'firebase_options.dart';
 
 final logger = Logger(
   level: kDebugMode ? Level.all : Level.warning,
@@ -22,11 +27,108 @@ final logger = Logger(
   ]),
 );
 
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  await Firebase.initializeApp();
+}
+
+Future<void> initializeLocalNotifications() async {
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const DarwinInitializationSettings initializationSettingsiOS =
+      DarwinInitializationSettings(
+    requestAlertPermission: true,
+    requestBadgePermission: true,
+    requestSoundPermission: true,
+  );
+
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsiOS,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) {
+      if (response.payload != null) {}
+      NotificationCenter().notify('navigate-notification');
+    },
+  );
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
   await dotenv.load(fileName: '.env');
   await _dependencyInjection();
+  await initializeLocalNotifications();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  messaging.getToken().then((value) {
+    if (value != null) {
+      StorageUtil storage = Get.find();
+      storage.setFCMToken(value);
+    }
+  });
+
+  messaging.onTokenRefresh.listen((fcmToken) {
+    StorageUtil storage = Get.find();
+    storage.setFCMToken(fcmToken);
+  }).onError((err) {});
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+    NotificationCenter().notify('navigate-notification');
+  });
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    if (message.notification != null) {
+    }
+
+    RemoteNotification? notification = message.notification;
+    AndroidNotification? android = message.notification?.android;
+
+    if (notification != null && android != null) {
+      flutterLocalNotificationsPlugin.show(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'your_channel_id',
+            'Your Channel Name',
+            channelDescription: 'Your channel description',
+            importance: Importance.max,
+            priority: Priority.high,
+          ),
+        ),
+      );
+    }
+  });
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(const AppInitializer());
 }

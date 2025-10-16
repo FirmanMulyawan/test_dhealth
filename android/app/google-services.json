@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "589217575601",
+    "project_id": "my-test-app-f331b",
+    "storage_bucket": "my-test-app-f331b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:589217575601:android:f7b69685b17dbf54a1a890",
+        "android_client_info": {
+          "package_name": "com.example.test_firman"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNeAKscEqM8PDgw4jA7HKMIu8NMpVHVO8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
