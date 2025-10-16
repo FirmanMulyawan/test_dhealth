@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../component/util/helper.dart';
 import '../../../component/util/state.dart';
 import '../../../component/model/news_response.dart';
@@ -12,8 +11,9 @@ class HomeController extends GetxController {
   final loadMoreLoading = false.obs;
 
   int page = 1;
-  final int pageSize = 5;
-  bool hasMore = true;
+  int pageSize = 5;
+  int totalResults = 0;
+  final hasMore = true.obs;
 
   final HomeRepository _repository;
   final ScrollController scrollController = ScrollController();
@@ -22,9 +22,9 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     getTopHeadlines();
     scrollController.addListener(_onScroll);
-    super.onInit();
   }
 
   @override
@@ -35,75 +35,66 @@ class HomeController extends GetxController {
     super.onClose();
   }
 
-  Future<void> getTopHeadlines({
-    bool refresh = false,
-  }) async {
-    if (isLoading.value) return;
+  Future<void> getTopHeadlines({bool isLoadMore = false}) async {
+    if (isLoadMore) {
+      if (loadMoreLoading.value || !hasMore.value) return;
 
-    if (refresh) {
+      loadMoreLoading.value = true;
+      page++;
+    } else {
+      isLoading.value = true;
       page = 1;
-      hasMore = true;
+      hasMore.value = true;
       article.clear();
     }
 
-    isLoading.value = true;
-
-    _repository.getTopHeadlines(
+    await _repository.getTopHeadlines(
       page: page,
       size: pageSize,
       response: ResponseHandler(
         onSuccess: (data) async {
           final fetched = data.articles ?? [];
-          if (fetched.length < pageSize) {
-            hasMore = false;
+
+          if (page == 1 && data.totalResults != null) {
+            totalResults = data.totalResults!;
           }
-          article.addAll(fetched);
+
+          if (fetched.isNotEmpty) {
+            article.addAll(fetched);
+          } else {
+            hasMore.value = false;
+          }
+
+          if (article.length >= totalResults) {
+            hasMore.value = false;
+          }
         },
         onFailed: (e, message) {
           AlertModel.showAlert(title: "Error", message: message);
         },
         onDone: () {
           isLoading.value = false;
-        },
-      ),
-    );
-  }
-
-  Future<void> loadMore() async {
-    if (loadMoreLoading.value || !hasMore) return;
-
-    loadMoreLoading.value = true;
-    page++;
-
-    _repository.getTopHeadlines(
-      page: page,
-      size: pageSize,
-      response: ResponseHandler(
-        onSuccess: (data) {
-          final fetched = data.articles ?? [];
-          if (fetched.length < pageSize) {
-            hasMore = false;
-          }
-          article.addAll(fetched);
-        },
-        onFailed: (e, message) {
-          AlertModel.showAlert(title: "Error", message: message);
-        },
-        onDone: () {
           loadMoreLoading.value = false;
+          update();
         },
       ),
     );
   }
 
   void _onScroll() {
-    if (!scrollController.hasClients || loadMoreLoading.value || !hasMore) {
+    if (!scrollController.hasClients ||
+        loadMoreLoading.value ||
+        !hasMore.value) {
       return;
     }
 
     if (scrollController.position.pixels >=
         scrollController.position.maxScrollExtent - 100) {
-      loadMore();
+      getTopHeadlines(isLoadMore: true);
     }
+  }
+
+  Future<void> onRefresh() async {
+    await getTopHeadlines(isLoadMore: false);
   }
 }

@@ -15,11 +15,14 @@ class SearchEveythingController extends GetxController {
       Debouncer(delay: Duration(milliseconds: 500));
 
   int page = 1;
-  final int pageSize = 5;
-  bool hasMore = true;
+  int pageSize = 5;
+  int totalResults = 0;
+  final hasMore = true.obs;
+
   final isLoading = false.obs;
   final loadMoreLoading = false.obs;
   final article = <Articles>[].obs;
+
   final ScrollController scrollController = ScrollController();
 
   SearchEveythingController(this._repository);
@@ -56,86 +59,81 @@ class SearchEveythingController extends GetxController {
     super.onClose();
   }
 
-  void changeSelectedCategory(String category) {
+  void changeSelectedCategory(String category) async {
     selectedCategoryId.value = category;
     update();
+    await getSearchList(isLoadMore: false);
   }
 
   void updateKeyword() {
     _searchDebouncer.call(() {
-      getSearchList(refresh: true);
+      getSearchList(isLoadMore: false);
     });
   }
 
   Future<void> getSearchList({
-    bool refresh = false,
+    bool isLoadMore = false,
   }) async {
-    if (isLoading.value) return;
+    if (isLoadMore) {
+      if (loadMoreLoading.value || !hasMore.value) return;
 
-    if (refresh) {
+      loadMoreLoading.value = true;
+      page++;
+    } else {
+      isLoading.value = true;
       page = 1;
-      hasMore = true;
+      hasMore.value = true;
       article.clear();
     }
 
-    isLoading.value = true;
-
-    _repository.getEverything(
+    await _repository.getEverything(
       search: searchController.text,
+      kategory: selectedCategoryId.value,
       page: page,
       size: pageSize,
       response: ResponseHandler(
         onSuccess: (data) async {
           final fetched = data.articles ?? [];
-          if (fetched.length < pageSize) {
-            hasMore = false;
+          if (page == 1 && data.totalResults != null) {
+            totalResults = data.totalResults!;
           }
-          article.addAll(fetched);
+
+          if (fetched.isNotEmpty) {
+            article.addAll(fetched);
+          } else {
+            hasMore.value = false;
+          }
+
+          if (article.length >= totalResults) {
+            hasMore.value = false;
+          }
         },
         onFailed: (e, message) {
           AlertModel.showAlert(title: "Error", message: message);
         },
         onDone: () {
           isLoading.value = false;
-        },
-      ),
-    );
-  }
-
-  Future<void> loadMore() async {
-    if (loadMoreLoading.value || !hasMore) return;
-    loadMoreLoading.value = true;
-    page++;
-    _repository.getEverything(
-      search: searchController.text,
-      page: page,
-      size: pageSize,
-      response: ResponseHandler(
-        onSuccess: (data) async {
-          final fetched = data.articles ?? [];
-          if (fetched.length < pageSize) {
-            hasMore = false;
-          }
-          article.addAll(fetched);
-        },
-        onFailed: (e, message) {
-          AlertModel.showAlert(title: "Error", message: message);
-        },
-        onDone: () {
-          isLoading.value = false;
+          loadMoreLoading.value = false;
+          update();
         },
       ),
     );
   }
 
   void _onScroll() {
-    if (!scrollController.hasClients || loadMoreLoading.value || !hasMore) {
+    if (!scrollController.hasClients ||
+        loadMoreLoading.value ||
+        !hasMore.value) {
       return;
     }
 
     if (scrollController.position.pixels >=
         scrollController.position.maxScrollExtent - 100) {
-      loadMore();
+      getSearchList(isLoadMore: true);
     }
+  }
+
+  Future<void> onRefresh() async {
+    await getSearchList(isLoadMore: false);
   }
 }

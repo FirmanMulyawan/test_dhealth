@@ -35,14 +35,7 @@ class SearchScreen extends GetView<SearchEveythingController> {
             height: 10,
           ),
           Expanded(
-            child: RefreshIndicator(
-              color: AppStyle.blue,
-              onRefresh: () {
-                controller.getSearchList(refresh: true);
-                return Future.value();
-              },
-              child: _listSearch(),
-            ),
+            child: _listSearch(),
           )
         ],
       ),
@@ -169,49 +162,67 @@ class SearchScreen extends GetView<SearchEveythingController> {
     return Obx(() {
       final isLoading = controller.isLoading.value;
       final isLoadMore = controller.loadMoreLoading.value;
-      final length = controller.article.length;
+      final hasMore = controller.hasMore.value;
+      final list = controller.article;
 
-      if (isLoading && controller.article.isEmpty) {
-        return Skeletonizer(
-          enabled: true,
-          child: ListView.separated(
-            itemCount: 5,
-            physics: AlwaysScrollableScrollPhysics(),
-            padding: EdgeInsets.all(0),
-            separatorBuilder: (context, index) {
-              return SizedBox(
-                height: 20,
-              );
-            },
-            itemBuilder: (context, index) {
-              return CardNews(isLoading: true, data: null);
-            },
+      if (isLoading && list.isEmpty) {
+        return ListView.separated(
+          itemCount: 3,
+          separatorBuilder: (_, __) => const SizedBox(height: 16),
+          itemBuilder: (_, __) => Skeletonizer(
+            enabled: true,
+            child: CardNews(isLoading: true, data: null),
           ),
         );
       }
 
-      return ListView.separated(
-          itemCount: length + (isLoadMore ? 1 : 0),
-          controller: controller.scrollController,
-          physics: AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 100),
-          separatorBuilder: (context, index) {
-            return SizedBox(
-              height: 20,
-            );
-          },
-          itemBuilder: (context, index) {
-            if (index == length) {
-              return const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
+      if (list.isEmpty) {
+        return const Center(
+          child: Text("Tidak ada berita ditemukan."),
+        );
+      }
 
-            final item = controller.article[index];
-
-            return CardNews(isLoading: false, data: item);
-          });
+      return RefreshIndicator(
+        color: AppStyle.blue,
+        onRefresh: controller.onRefresh,
+        child: ListView.separated(
+            controller: controller.scrollController,
+            padding: EdgeInsets.zero,
+            physics: AlwaysScrollableScrollPhysics(),
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            itemCount: list.length + 1,
+            itemBuilder: (context, index) {
+              if (index < list.length) {
+                final item = list[index];
+                return CardNews(isLoading: false, data: item);
+              } else {
+                if (isLoadMore) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: AppStyle.blue,
+                      ),
+                    ),
+                  );
+                } else if (!hasMore) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Text(
+                      "Semua berita sudah ditampilkan",
+                      textAlign: TextAlign.center,
+                      style: AppStyle.regular(
+                        size: 14,
+                        textColor: AppStyle.greyDark,
+                      ),
+                    ),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              }
+            }),
+      );
     });
   }
 }

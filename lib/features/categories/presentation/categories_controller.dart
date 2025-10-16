@@ -14,11 +14,12 @@ class CategoriesController extends GetxController {
 
   int page = 1;
   final int pageSize = 5;
-  bool hasMore = true;
-
-  final CategoriesRepository _repository;
+  final hasMore = true.obs;
+  int totalResults = 0;
   final ScrollController scrollController = ScrollController();
   String selectedCategoryId = '';
+
+  final CategoriesRepository _repository;
 
   CategoriesController(this._repository);
 
@@ -38,25 +39,37 @@ class CategoriesController extends GetxController {
     super.onInit();
   }
 
-  void changeSelectedCategory(String category) {
+  @override
+  void onClose() {
+    scrollController.removeListener(_onScroll);
+    scrollController.dispose();
+
+    super.onClose();
+  }
+
+  void changeSelectedCategory(String category) async {
     selectedCategoryId = category;
     update();
 
-    getCategoriesList(refresh: true);
+    await getCategoriesList(isLoadMore: false);
   }
 
   Future<void> getCategoriesList({
-    bool refresh = false,
+    bool isLoadMore = false,
   }) async {
     if (isLoading.value) return;
 
-    if (refresh) {
+    if (isLoadMore) {
+      if (loadMoreLoading.value || !hasMore.value) return;
+
+      loadMoreLoading.value = true;
+      page++;
+    } else {
+      isLoading.value = true;
       page = 1;
-      hasMore = true;
+      hasMore.value = true;
       article.clear();
     }
-
-    isLoading.value = true;
 
     _repository.getTopHeadlines(
       page: page,
@@ -65,57 +78,46 @@ class CategoriesController extends GetxController {
       response: ResponseHandler(
         onSuccess: (data) async {
           final fetched = data.articles ?? [];
-          if (fetched.length < pageSize) {
-            hasMore = false;
+          if (page == 1 && data.totalResults != null) {
+            totalResults = data.totalResults!;
           }
-          article.addAll(fetched);
+
+          if (fetched.isNotEmpty) {
+            article.addAll(fetched);
+          } else {
+            hasMore.value = false;
+          }
+
+          if (article.length >= totalResults) {
+            hasMore.value = false;
+          }
         },
         onFailed: (e, message) {
           AlertModel.showAlert(title: "Error", message: message);
         },
         onDone: () {
           isLoading.value = false;
+          loadMoreLoading.value = false;
+          update();
         },
       ),
     );
   }
 
   void _onScroll() {
-    if (!scrollController.hasClients || loadMoreLoading.value || !hasMore) {
+    if (!scrollController.hasClients ||
+        loadMoreLoading.value ||
+        !hasMore.value) {
       return;
     }
 
     if (scrollController.position.pixels >=
         scrollController.position.maxScrollExtent - 100) {
-      loadMore();
+      getCategoriesList(isLoadMore: true);
     }
   }
 
-  Future<void> loadMore() async {
-    if (loadMoreLoading.value || !hasMore) return;
-
-    loadMoreLoading.value = true;
-    page++;
-
-    _repository.getTopHeadlines(
-      page: page,
-      size: pageSize,
-      categories: selectedCategoryId,
-      response: ResponseHandler(
-        onSuccess: (data) {
-          final fetched = data.articles ?? [];
-          if (fetched.length < pageSize) {
-            hasMore = false;
-          }
-          article.addAll(fetched);
-        },
-        onFailed: (e, message) {
-          AlertModel.showAlert(title: "Error", message: message);
-        },
-        onDone: () {
-          loadMoreLoading.value = false;
-        },
-      ),
-    );
+  Future<void> onRefresh() async {
+    await getCategoriesList(isLoadMore: false);
   }
 }
