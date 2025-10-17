@@ -18,6 +18,7 @@ import 'component/config/app_route.dart';
 import 'component/config/app_style.dart';
 import 'component/translation/app_translation.dart';
 import 'component/util/storage_util.dart';
+import 'features/notifications/notifications_controller.dart';
 import 'firebase_options.dart';
 
 final logger = Logger(
@@ -35,6 +36,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
+  final controller = Get.put(NotificationController());
+  await controller.addNotification(
+    message.notification?.title ?? 'Tanpa Judul',
+    message.notification?.body ?? 'Tidak ada isi',
+  );
 }
 
 Future<void> initializeLocalNotifications() async {
@@ -103,8 +109,14 @@ void main() async {
     NotificationCenter().notify('navigate-notification');
   });
 
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  final controller = Get.put(NotificationController());
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
     if (message.notification != null) {
+      await controller.addNotification(
+        message.notification?.title ?? 'Tanpa Judul',
+        message.notification?.body ?? 'Tidak ada isi',
+      );
     }
 
     RemoteNotification? notification = message.notification;

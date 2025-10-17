@@ -22,19 +22,18 @@ class DatabaseManager {
   Future _initDB() async {
     Directory docDir = await getApplicationDocumentsDirectory();
 
-    String path = join(docDir.path, "profile.db");
+    String path = join(docDir.path, "notification.db");
 
     return await openDatabase(
       path,
       version: 1,
       onCreate: (database, version) async {
         return await database.execute('''
-            CREATE TABLE profile (
+            CREATE TABLE notification (
               id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-              name TEXT NOT NULL,
-              phoneNumber TEXT NOT NULL,
-              email TEXT NOT NULL,
-              imagePath TEXT NOT NULL
+              title TEXT NOT NULL,
+              body TEXT NOT NULL,
+              date TEXT NOT NULL
             )
           ''');
       },

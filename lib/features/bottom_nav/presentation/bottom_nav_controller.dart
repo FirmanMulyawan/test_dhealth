@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../categories/presentation/categories_screen.dart';
 import '../../home/presentation/home_screen.dart';
+import '../../notifications/notification_screen.dart';
 import '../../profile/presentation/profile_screen.dart';
 import '../../search/presentation/search_screen.dart';
 
@@ -19,7 +20,7 @@ class BottomNavController extends GetxController {
       HomeScreen(),
       SearchScreen(),
       CategoriesScreen(),
-      Text("World"),
+      NotificationScreen(),
       Profile(),
     ];
 

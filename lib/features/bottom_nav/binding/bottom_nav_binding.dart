@@ -7,6 +7,7 @@ import '../../categories/repository/categories_repository.dart';
 import '../../home/presentation/home_controller.dart';
 import '../../home/repository/home_datasource.dart';
 import '../../home/repository/home_repository.dart';
+import '../../notifications/notifications_controller.dart';
 import '../../search/presentation/search_controller.dart';
 import '../../search/repository/search_datasource.dart';
 import '../../search/repository/search_repository.dart';
@@ -28,5 +29,7 @@ class BottomNavBinding extends Bindings {
     Get.lazyPut(() => CategoriesDatasource(Network.dioClient()));
     Get.lazyPut(() => CategoriesRepository(Get.find()));
     Get.lazyPut(() => CategoriesController(Get.find()));
+
+    Get.lazyPut(() => NotificationController(), fenix: true);
   }
 }
