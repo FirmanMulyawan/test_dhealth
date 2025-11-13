@@ -18,8 +18,6 @@ class DashboardController extends GetxController {
     requestLocationPermission();
     updateTime();
     loadAbsensi();
-    // Update waktu tiap detik
-    ever(currentTime, (_) {});
     _startClock();
   }
 
@@ -51,23 +49,37 @@ class DashboardController extends GetxController {
 
   Future<void> addAbsensi(String type) async {
     try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-
       final now = DateTime.now();
+      final today = DateFormat('dd-MM-yyyy').format(now);
+
+      // 🔍 Validasi: cek apakah user sudah absen dengan tipe yang sama hari ini
+      bool alreadyAbsenToday = absensiList
+          .any((item) => item['type'] == type && item['date'] == today);
+
+      if (alreadyAbsenToday) {
+        Get.snackbar('Peringatan', 'Anda sudah melakukan $type hari ini!');
+        return;
+      }
+
+      // ✅ Ambil lokasi jika belum absen
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
       final newData = {
         'type': type,
         'time': DateFormat('HH:mm:ss').format(now),
-        'date': DateFormat('dd-MM-yyyy').format(now),
+        'date': today,
         'lat': position.latitude,
         'lng': position.longitude,
       };
 
       absensiList.insert(0, newData);
       await _saveAbsensi();
+
       Get.snackbar('Berhasil', '$type dicatat!');
     } catch (e) {
-      Get.snackbar('Error', 'Gagal mendapatkan lokasi');
+      Get.snackbar('Error', 'Gagal mendapatkan lokasi: $e');
     }
   }
 }
