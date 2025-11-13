@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 
 import '../../component/config/app_route.dart';
 
+import '../../component/util/helper.dart';
+
 class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -45,14 +47,21 @@ class LoginController extends GetxController {
 
     if (emailController.text == "firmanmulyawan@gmail.com" &&
         passwordController.text == "password") {
-      // isLoading.value = true;
-      // await Future.delayed(const Duration(seconds: 2));
-      // isLoading.value = false;
+      isLoading.value = true;
+      await Future.delayed(const Duration(seconds: 2));
+      isLoading.value = false;
 
-      Get.toNamed(AppRoute.dashboard, arguments: "Firman");
+      AlertModel.showAlert(
+        title: "Berhasil",
+        message: "Anda Berhasil untuk login",
+        buttonText: "Success",
+        onClicked: () {
+          Get.toNamed(AppRoute.dashboard, arguments: "Firman");
+        },
+      );
     } else {
-      Get.snackbar('Gagal', 'email dan password tidak benar',
-          snackPosition: SnackPosition.BOTTOM);
+      AlertModel.showAlert(
+          title: "Gagal", message: "email dan password tidak benar");
     }
   }
 }
