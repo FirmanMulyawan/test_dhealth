@@ -74,73 +74,80 @@ void main() async {
   await dotenv.load(fileName: '.env');
   await _dependencyInjection();
   await initializeLocalNotifications();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    announcement: false,
-    badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
-    sound: true,
-  );
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
 
-  messaging.getToken().then((value) {
-    if (value != null) {
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    messaging.getToken().then((value) {
+      if (value != null) {
+        StorageUtil storage = Get.find();
+        storage.setFCMToken(value);
+      }
+    });
+
+    messaging.onTokenRefresh.listen((fcmToken) {
       StorageUtil storage = Get.find();
-      storage.setFCMToken(value);
-    }
-  });
+      storage.setFCMToken(fcmToken);
+    }).onError((err) {});
 
-  messaging.onTokenRefresh.listen((fcmToken) {
-    StorageUtil storage = Get.find();
-    storage.setFCMToken(fcmToken);
-  }).onError((err) {});
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      NotificationCenter().notify('navigate-notification');
+    });
 
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-    NotificationCenter().notify('navigate-notification');
-  });
+    final controller = Get.put(NotificationController());
 
-  final controller = Get.put(NotificationController());
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      if (message.notification != null) {
+        await controller.addNotification(
+          message.notification?.title ?? 'Tanpa Judul',
+          message.notification?.body ?? 'Tidak ada isi',
+        );
+      }
 
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-    if (message.notification != null) {
-      await controller.addNotification(
-        message.notification?.title ?? 'Tanpa Judul',
-        message.notification?.body ?? 'Tidak ada isi',
-      );
-    }
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
 
-    RemoteNotification? notification = message.notification;
-    AndroidNotification? android = message.notification?.android;
-
-    if (notification != null && android != null) {
-      flutterLocalNotificationsPlugin.show(
-        notification.hashCode,
-        notification.title,
-        notification.body,
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'your_channel_id',
-            'Your Channel Name',
-            channelDescription: 'Your channel description',
-            importance: Importance.max,
-            priority: Priority.high,
+      if (notification != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'your_channel_id',
+              'Your Channel Name',
+              channelDescription: 'Your channel description',
+              importance: Importance.max,
+              priority: Priority.high,
+            ),
           ),
-        ),
-      );
-    }
-  });
+        );
+      }
+    });
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
 
   runApp(const AppInitializer());
 }

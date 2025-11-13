@@ -37,6 +37,8 @@ dependencies:
   flutter_html: ^3.0.0
   flutter_rating_bar: ^4.0.1
   flutter_svg_provider: ^1.0.7
+  geolocator: ^11.0.0
+  shared_preferences: ^2.2.3
   # just_audio: ^0.10.4
   # flutter_html_video: ^3.0.0
   # flutter_html_audio: ^3.0.0
